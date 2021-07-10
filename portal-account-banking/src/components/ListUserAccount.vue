@@ -1,0 +1,170 @@
+<template>
+  <div>
+    <h1>TOTAL: {{ total }}</h1>
+    <a-table
+      :columns="columns"
+      :data-source="data"
+      :pagination="data.length === 0 ? false : pagination"
+      @change="handleTableChange"
+      bordered
+    >
+      <template
+        v-for="col in ['name', 'idRole', 'phone', 'country']"
+        :slot="col"
+        slot-scope="text"
+      >
+        <div :key="col">
+          <template>
+            {{ text }}
+          </template>
+        </div>
+      </template>
+      <template slot="operation" slot-scope="text, record">
+        <div class="editable-row-operations">
+          <!-- <span>
+          <a @click="() => save(record.key)">Save</a>
+          <a-popconfirm
+            title="Sure to cancel?"
+            @confirm="() => cancel(record.key)"
+          >
+            <a>Cancel</a>
+          </a-popconfirm>
+        </span> -->
+          <span>
+            <a>Edit</a>&nbsp;
+            <a @click="handleDeleteUserAccount(record.key)">Delete</a>
+          </span>
+        </div>
+      </template>
+    </a-table>
+  </div>
+</template>
+<script>
+const columns = [
+  {
+    title: "name",
+    dataIndex: "name",
+    width: "25%",
+    scopedSlots: { customRender: "name" },
+  },
+  {
+    title: "idRole",
+    dataIndex: "idRole",
+    width: "15%",
+    scopedSlots: { customRender: "idRole" },
+  },
+  {
+    title: "phone",
+    dataIndex: "phone",
+    width: "20%",
+    scopedSlots: { customRender: "phone" },
+  },
+  {
+    title: "country",
+    dataIndex: "country",
+    width: "20%",
+    scopedSlots: { customRender: "country" },
+  },
+  {
+    title: "operation",
+    dataIndex: "operation",
+    scopedSlots: { customRender: "operation" },
+  },
+];
+
+import { mapActions } from "vuex";
+
+export default {
+  data() {
+    return {
+      columns,
+      data: [],
+      page: 1,
+      // total: 1,
+      pagination: {
+        current: 1,
+        total: this.total,
+        pageSize: 3,
+        pageSizes: 500,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        // pageSizeOptions: ["15", "25", "50"],
+        showTotal: (total) => {
+          return "Tổng số dòng " + total;
+        },
+      },
+    };
+  },
+  methods: {
+    ...mapActions[
+      ("userAccount/getListUserAccount", "userAccount/getAlUserAccount")
+    ],
+    getListUserAccount(page, limit) {
+      let _this = this;
+      let result = [];
+      this.$store
+        .dispatch("userAccount/getListUserAccount", {
+          page,
+          limit,
+        })
+        .then((res) => {
+          _this.pagination.total =
+            _this.$store.getters["userAccount/GetTotalUserAccount"];
+          result = res.forEach((item) => {
+            result.push({
+              key: item.id,
+              name: item.name,
+              idRole: item.idRole,
+              phone: item.phone,
+              country: item.country,
+            });
+          });
+        });
+      return result;
+    },
+    getAllUserAccount() {
+      let _this = this;
+      let result = [];
+      this.$store.dispatch("userAccount/getAllUserAccount").then((res) => {
+        _this.pagination.total =
+          _this.$store.getters["userAccount/GetTotalUserAccount"];
+        result = res.forEach((item) => {
+          result.push({
+            key: item.id,
+            name: item.name,
+            idRole: item.idRole,
+            phone: item.phone,
+            country: item.country,
+          });
+        });
+      });
+      return result;
+    },
+    handleTableChange(pagination) {
+      this.pagination = pagination;
+      console.log("Table change: ", this.pagination);
+      this.data = this.getListUserAccount(
+        this.pagination.current,
+        this.pagination.pageSize
+      );
+    },
+    handleDeleteUserAccount(idUser) {
+      console.log("Id user delete: ", idUser);
+    },
+  },
+  computed: {
+    total() {
+      return this.$store.state.userAccount.total;
+    },
+  },
+  created() {
+    console.log("Pagination: ", this.pagination.pageSize);
+    this.data = this.getListUserAccount(this.page, this.pagination.pageSize);
+  },
+};
+</script>
+<style scoped>
+.editable-row-operations a {
+  margin-right: 8px;
+}
+</style>

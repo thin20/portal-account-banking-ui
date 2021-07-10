@@ -1,12 +1,16 @@
 <template>
   <div class="home">
-    <h1>HOME</h1>
+    <ListUserAccount />
   </div>
 </template>
 
 <script>
+import ListUserAccount from "@/components/ListUserAccount";
 export default {
   name: "Home",
+  components: {
+    ListUserAccount,
+  },
 };
 </script>
 

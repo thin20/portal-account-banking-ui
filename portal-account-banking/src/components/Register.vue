@@ -183,12 +183,13 @@ export default {
           let statusRegister = this.$store.dispatch("auth/register", userinfo);
           statusRegister.then((res) => {
             if (res) {
+              this.$message.success("Register successfull!");
               this.$router.push({ name: "Home" });
             } else {
               console.log(this.form);
               this.form.validateFields(["username"], { force: true });
               this.form.resetFields();
-              alert("Username is already exist!");
+              this.$message.error("Username is already exits!");
             }
           });
         }

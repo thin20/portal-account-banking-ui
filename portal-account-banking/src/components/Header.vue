@@ -18,7 +18,7 @@
         </router-link>
       </template>
       <template slot="extra" v-else>
-        <span>Username: {{ username }}</span>
+        <span>{{ idRole }}: {{ username }}</span>
         <span v-on:click="handleLogout" style="cursor: pointer"> / Logout</span>
       </template>
     </a-page-header>
@@ -44,6 +44,9 @@ export default {
     username() {
       console.log("Username: ", this.$store.state?.auth?.currentUser?.name);
       return this.$store.state?.auth?.currentUser?.name;
+    },
+    idRole() {
+      return this.$store.state?.auth?.currentUser?.idRole;
     },
   },
 };

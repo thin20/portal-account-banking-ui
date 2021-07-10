@@ -2,6 +2,7 @@ const api = {
     // UserAccount
     Login: 'api/UserAccount/Login',
     Register: 'api/UserAccount/Register',
+    GetAllUserAccount: 'api/UserAccount/GetAllUserAccount',
     GetUserAccountByID: 'api/UserAccount/GetUser',
     GetListUserAccount: 'api/UserAccount/GetList',
     GetListSearchUserAccount: 'api/UserAccount/GetListSearch',

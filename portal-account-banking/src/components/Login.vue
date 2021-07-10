@@ -81,8 +81,12 @@ export default {
           let statusLogin = this.$store.dispatch("auth/logIn", values);
           statusLogin.then((res) => {
             if (res) {
+              this.$message.success("Login successful!");
               this.$router.push({ name: "Home" });
             } else {
+              this.$message.error(
+                "Login fail! Username or password not correct!"
+              );
               alert("Thong tin dang nhap sai");
               this.form.resetFields();
             }

@@ -1,18 +1,32 @@
-import { GetListUserAccount } from '@/api/UserAccount'
+import { GetListUserAccount, GetAllUserAccount } from '@/api/UserAccount'
 
 export const state = {
-    listUserAccount: []
+    listUserAccount: [],
+    page: 0,
+    total: 0
 }
 
 export const getters = {
     GetListUserAccount: (state) => {
         return state.listUserAccount
+    },
+    GetNumberOfPage: (state) => {
+        return state.page;
+    },
+    GetTotalUserAccount: (state) => {
+        return state.total;
     }
 }
 
 export const mutations = {
     SET_LIST_USER_ACCOUNT(state, newValue) {
         state.listUserAccount = [...newValue]
+    },
+    SET_NUMBER_OF_PAGE(state, newValue) {
+        state.page = newValue;
+    },
+    SET_TOTAL_USER_ACCOUNT(state, newValue) {
+        state.total = newValue
     }
 }
 
@@ -24,10 +38,30 @@ export const actions = {
         }
         try {
             const response = await GetListUserAccount(params)
-            console.log("Response list user account: ", response)
+            // console.log("Response list user account: ", response)
             if (response?.data?.status && response?.data?.data) {
                 if (response.data.status === 1) {
                     commit('SET_LIST_USER_ACCOUNT', response.data.data)
+                    commit('SET_NUMBER_OF_PAGE', response.data.numberOfPage)
+                    commit('SET_TOTAL_USER_ACCOUNT', response.data.total)
+                    return new Promise((resolve) => resolve(response.data.data))
+                }
+            }
+            return new Promise((resolve, reject) => reject(response))
+        } catch (error) {
+            console.log(error)
+            return new Promise((resolve, reject) => reject(error))
+        }
+    },
+    async getAllUserAccount({ commit }) {
+        try {
+            const response = await GetAllUserAccount()
+            // console.log("Response list user account: ", response)
+            if (response?.data?.status && response?.data?.data) {
+                if (response.data.status === 1) {
+                    commit('SET_LIST_USER_ACCOUNT', response.data.data)
+                    commit('SET_NUMBER_OF_PAGE', response.data.numberOfPage)
+                    commit('SET_TOTAL_USER_ACCOUNT', response.data.total)
                     return new Promise((resolve) => resolve(response.data.data))
                 }
             }
