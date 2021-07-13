@@ -1,28 +1,37 @@
 <template>
   <div>
-    <h1>TOTAL: {{ total }}</h1>
-    <a-table
-      ref="TableUserAccount"
-      :columns="columns"
-      :data-source="data"
-      :pagination="data.length === 0 ? false : pagination"
-      @change="handleTableChange"
-      bordered
-    >
-      <template
-        v-for="col in ['name', 'idRole', 'phone', 'country']"
-        :slot="col"
-        slot-scope="text"
-      >
-        <div :key="col">
-          <template>
-            {{ text }}
+    <a-row justify="center">
+      <a-col :span="20" :offset="2">
+        <h1 class="title-list-user-account">TOTAL: {{ total }}</h1>
+        <router-link
+          to="/formAddUserAccount"
+          class="btn-add-user-account"
+          v-on:click="handleAddUserAccount"
+        >
+          Add User Account
+        </router-link>
+        <a-table
+          ref="TableUserAccount"
+          :columns="columns"
+          :data-source="data"
+          :pagination="data.length === 0 ? false : pagination"
+          @change="handleTableChange"
+          bordered
+        >
+          <template
+            v-for="col in ['name', 'idRole', 'phone', 'country']"
+            :slot="col"
+            slot-scope="text"
+          >
+            <div :key="col">
+              <template>
+                {{ text }}
+              </template>
+            </div>
           </template>
-        </div>
-      </template>
-      <template slot="operation" slot-scope="text, record">
-        <div class="editable-row-operations">
-          <!-- <span>
+          <template slot="operation" slot-scope="text, record">
+            <div class="editable-row-operations">
+              <!-- <span>
           <a @click="() => save(record.key)">Save</a>
           <a-popconfirm
             title="Sure to cancel?"
@@ -31,13 +40,15 @@
             <a>Cancel</a>
           </a-popconfirm>
         </span> -->
-          <span>
-            <a>Edit</a>&nbsp;
-            <a @click="handleDeleteUserAccount(record.key)">Delete</a>
-          </span>
-        </div>
-      </template>
-    </a-table>
+              <span>
+                <a>Edit</a>&nbsp;
+                <a @click="handleDeleteUserAccount(record.key)">Delete</a>
+              </span>
+            </div>
+          </template>
+        </a-table>
+      </a-col>
+    </a-row>
   </div>
 </template>
 <script>
@@ -90,7 +101,7 @@ export default {
         pageSizes: 500,
         showSizeChanger: true,
         showQuickJumper: true,
-        // pageSizeOptions: ["15", "25", "50"],
+        pageSizeOptions: ["15", "25", "50"],
         showTotal: (total) => {
           return "Tổng số dòng " + total;
         },
@@ -177,6 +188,9 @@ export default {
         }
       });
     },
+    handleAddUserAccount() {
+      console.log("add");
+    },
   },
   computed: {
     total() {
@@ -192,5 +206,26 @@ export default {
 <style scoped>
 .editable-row-operations a {
   margin-right: 8px;
+}
+.title-list-user-account {
+  padding-top: 20px;
+  text-align: center;
+}
+.btn-add-user-account {
+  display: block;
+  margin-bottom: 20px;
+  padding: 8px 15px;
+  width: 180px;
+
+  cursor: pointer;
+  border: transparent;
+  border-radius: 4px;
+  text-align: center;
+
+  background-color: rgb(3, 132, 255);
+  color: #fff;
+}
+.btn-add-user-account:hover {
+  opacity: 0.8;
 }
 </style>

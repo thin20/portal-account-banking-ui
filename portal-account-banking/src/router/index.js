@@ -22,9 +22,9 @@ const routes = [
     component: () => import('@/components/Register.vue')
   },
   {
-    path: '/formUserAccount',
-    name: 'FormUserAccount',
-    component: () => import('../components/FormUserAccount.vue'),
+    path: '/formAddUserAccount',
+    name: 'FormAddUserAccount',
+    component: () => import('../components/FormAddUserAccount.vue'),
     meta: { requireAdmin: true }
   },
   {
@@ -47,8 +47,16 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requireAdmin)) {
-    console.log("Store: ", store)
-    next();
+    if (!store.getters['auth/loggedIn']) {
+      next({ name: 'Login' })
+    } else {
+      if (store.state.auth.currentUser.idRole.trim() == 'admin') {
+        next();
+      }
+      else {
+        next(false);
+      }
+    }
   }
   else {
     next();

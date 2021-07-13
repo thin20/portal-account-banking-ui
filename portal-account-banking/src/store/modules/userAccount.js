@@ -1,4 +1,4 @@
-import { GetListUserAccount, GetAllUserAccount } from '@/api/UserAccount'
+import { GetListUserAccount, GetAllUserAccount, CreateUserAccount } from '@/api/UserAccount'
 
 export const state = {
     listUserAccount: [],
@@ -66,6 +66,20 @@ export const actions = {
                 }
             }
             return new Promise((resolve, reject) => reject(response))
+        } catch (error) {
+            console.log(error)
+            return new Promise((resolve, reject) => reject(error))
+        }
+    },
+    async createUserAccount({ getters }, { userInfo, currentUserId }) {
+        try {
+            getters['GetListUserAccount']
+            const response = await CreateUserAccount(userInfo, currentUserId)
+            console.log("Response create User: ", response)
+            if (response?.data?.status === 1) {
+                return new Promise((resolve) => resolve(true))
+            }
+            return new Promise((resolve) => resolve(false))
         } catch (error) {
             console.log(error)
             return new Promise((resolve, reject) => reject(error))

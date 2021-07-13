@@ -16,6 +16,5 @@ export default {
 
 <style>
 .home {
-  text-align: center;
 }
 </style>

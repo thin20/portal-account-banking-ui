@@ -6,6 +6,7 @@ const api = {
     GetUserAccountByID: 'api/UserAccount/GetUser',
     GetListUserAccount: 'api/UserAccount/GetList',
     GetListSearchUserAccount: 'api/UserAccount/GetListSearch',
+    CreateUserAccount: 'api/UserAccount/CreateUserAccount',
     UpdateUserAccount: 'api/UserAccount/UpdateUserAccount',
     DeleteUserAccount: 'api/UserAccount/DeleteUserAccount',
 

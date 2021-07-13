@@ -18,6 +18,18 @@ export async function GetListUserAccount(parameter) {
     })
 }
 
+export async function CreateUserAccount(parameter, currentUserId) {
+    let paramString = queryString.stringify(parameter)
+    console.log("Param String: ", paramString)
+    return axios({
+        url: api.CreateUserAccount + '?' + paramString,
+        method: 'post',
+        headers: {
+            "idUser": currentUserId
+        }
+    })
+}
+
 export async function DeleteUserAccount(parameter, currentUserId) {
     let paramString = queryString.stringify(parameter)
     return axios({
