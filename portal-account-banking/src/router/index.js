@@ -28,6 +28,12 @@ const routes = [
     meta: { requireAdmin: true }
   },
   {
+    path: '/formUpdateUserAccount/:id',
+    name: 'FormUpdateUserAccount',
+    component: () => import('../components/FormUpdateUserAccount.vue'),
+    meta: { requireAdmin: true }
+  },
+  {
     path: '/about',
     name: 'About',
     component: () => import('../views/About.vue')

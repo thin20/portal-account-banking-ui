@@ -64,7 +64,7 @@
               v-decorator="[
                 'role',
                 {
-                  initialValue: ['Role'],
+                  initialValue: ['normal'],
                   rules: [
                     {
                       type: 'array',
@@ -175,7 +175,7 @@ export default {
     };
   },
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: "register" });
+    this.form = this.$form.createForm(this, { name: "create" });
   },
   methods: {
     ...mapActions["role/getListRole"],

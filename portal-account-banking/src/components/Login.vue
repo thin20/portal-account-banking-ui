@@ -87,7 +87,6 @@ export default {
               this.$message.error(
                 "Login fail! Username or password not correct!"
               );
-              alert("Thong tin dang nhap sai");
               this.form.resetFields();
             }
           });

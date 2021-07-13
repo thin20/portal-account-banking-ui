@@ -3,11 +3,7 @@
     <a-row justify="center">
       <a-col :span="20" :offset="2">
         <h1 class="title-list-user-account">TOTAL: {{ total }}</h1>
-        <router-link
-          to="/formAddUserAccount"
-          class="btn-add-user-account"
-          v-on:click="handleAddUserAccount"
-        >
+        <router-link to="/formAddUserAccount" class="btn-add-user-account">
           Add User Account
         </router-link>
         <a-table
@@ -31,17 +27,10 @@
           </template>
           <template slot="operation" slot-scope="text, record">
             <div class="editable-row-operations">
-              <!-- <span>
-          <a @click="() => save(record.key)">Save</a>
-          <a-popconfirm
-            title="Sure to cancel?"
-            @confirm="() => cancel(record.key)"
-          >
-            <a>Cancel</a>
-          </a-popconfirm>
-        </span> -->
               <span>
-                <a>Edit</a>&nbsp;
+                <router-link :to="'/formUpdateUserAccount/' + record.key"
+                  >Edit</router-link
+                >&nbsp;
                 <a @click="handleDeleteUserAccount(record.key)">Delete</a>
               </span>
             </div>
@@ -84,7 +73,7 @@ const columns = [
   },
 ];
 
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import { DeleteUserAccount } from "@/api/UserAccount";
 
 export default {
@@ -112,6 +101,7 @@ export default {
     ...mapActions[
       ("userAccount/getListUserAccount", "userAccount/getAlUserAccount")
     ],
+    ...mapGetters["auth/loggedIn"],
     getListUserAccount(page, limit) {
       let _this = this;
       let result = [];
@@ -187,9 +177,6 @@ export default {
           }
         }
       });
-    },
-    handleAddUserAccount() {
-      console.log("add");
     },
   },
   computed: {

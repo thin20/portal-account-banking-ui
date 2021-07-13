@@ -49,7 +49,7 @@ export const actions = {
                     return new Promise((resolve) => resolve(true))
                 }
             }
-            return new Promise((resolve, reject) => reject(false))
+            return new Promise((resolve) => resolve(false))
         } catch (error) {
             console.log(error)
             return new Promise((resolve, reject) => reject(error))

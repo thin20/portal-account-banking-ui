@@ -1,6 +1,6 @@
 <template>
   <div class="form-register">
-    <h1 class="title-register">Update User Account</h1>
+    <h1 class="title-register">Updata User Account</h1>
     <a-row type="flex" justify="center">
       <a-col :span="8">
         <a-form :form="form" @submit="handleSubmit">
@@ -9,6 +9,9 @@
               v-decorator="[
                 'username',
                 {
+                  initialValue: this.userUpdate.userName
+                    ? this.userUpdate.userName.trim()
+                    : this.userUpdate.userName,
                   rules: [
                     { required: true, message: 'Please input your username!' },
                   ],
@@ -59,6 +62,23 @@
               @blur="handleConfirmBlur"
             />
           </a-form-item>
+          <a-form-item v-bind="formItemLayout" label="Role">
+            <a-cascader
+              v-decorator="[
+                'role',
+                {
+                  rules: [
+                    {
+                      type: 'array',
+                      required: true,
+                      message: 'Please select Role of user!',
+                    },
+                  ],
+                },
+              ]"
+              :options="listRole"
+            />
+          </a-form-item>
           <a-form-item v-bind="formItemLayout">
             <span slot="label">
               Nickname&nbsp;
@@ -70,6 +90,9 @@
               v-decorator="[
                 'nickname',
                 {
+                  initialValue: this.userUpdate.name
+                    ? this.userUpdate.name.trim()
+                    : this.userUpdate.name,
                   rules: [
                     {
                       required: true,
@@ -94,6 +117,9 @@
               v-decorator="[
                 'phone',
                 {
+                  initialValue: this.userUpdate.phone
+                    ? this.userUpdate.phone.trim()
+                    : this.userUpdate.phone,
                   rules: [
                     {
                       required: true,
@@ -116,7 +142,7 @@
             </a-checkbox>
           </a-form-item>
           <a-form-item v-bind="tailFormItemLayout">
-            <a-button type="primary" html-type="submit"> Register </a-button>
+            <a-button type="primary" html-type="submit"> Save </a-button>
           </a-form-item>
         </a-form>
       </a-col>
@@ -126,10 +152,12 @@
 
 <script>
 import { mapActions } from "vuex";
+import { GetUserAccountByID } from "@/api/UserAccount";
 export default {
   data() {
     return {
       confirmDirty: false,
+      userUpdate: {},
       country: "",
       autoCompleteResult: [],
       formItemLayout: {
@@ -157,10 +185,10 @@ export default {
     };
   },
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: "register" });
+    this.form = this.$form.createForm(this, { name: "update" });
   },
   methods: {
-    ...mapActions["auth/register"],
+    ...mapActions[("role/getListRole", "userAccount/updateUserAccount")],
     onSelect({ name }) {
       this.country = name;
     },
@@ -168,22 +196,30 @@ export default {
       e.preventDefault();
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          values = { ...values, country: this.country };
+          values = { ...values, country: this.country, idRole: values.role[0] };
           console.log("Received values of form: ", values);
-          let userinfo = {
+          let userInfo = {
+            id: this.$route.params.id,
             userName: values.username,
             password: values.password,
             phone: values.phone,
-            idRole: "normal",
+            idRole: values.idRole,
             country: values.country,
             name: values.nickname,
           };
-          console.log(userinfo);
           // call api register
-          let statusRegister = this.$store.dispatch("auth/register", userinfo);
-          statusRegister.then((res) => {
+          let statusUpdate = this.$store.dispatch(
+            "userAccount/updateUserAccount",
+            {
+              userInfo,
+              currentUserId: this.$store.state.auth?.currentUser?.id
+                ? this.$store.state.auth.currentUser.id
+                : -1,
+            }
+          );
+          statusUpdate.then((res) => {
             if (res) {
-              this.$message.success("Register successfull!");
+              this.$message.success("Update user account successfull!");
               this.$router.push({ name: "Home" });
             } else {
               console.log(this.form);
@@ -214,6 +250,21 @@ export default {
       }
       callback();
     },
+  },
+  computed: {
+    listRole() {
+      return this.$store.getters["role/GetListOptionRole"];
+    },
+  },
+  created() {
+    this.$store.dispatch("role/getListRole");
+    let idUserUpdate = this.$route.params.id;
+    GetUserAccountByID({ userId: idUserUpdate }).then((res) => {
+      if (res.data.status === 1) {
+        this.userUpdate = { ...res.data.data[0] };
+        console.log(this.userUpdate);
+      }
+    });
   },
 };
 </script>
