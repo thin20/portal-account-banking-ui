@@ -2,6 +2,7 @@
   <div>
     <h1>TOTAL: {{ total }}</h1>
     <a-table
+      ref="TableUserAccount"
       :columns="columns"
       :data-source="data"
       :pagination="data.length === 0 ? false : pagination"
@@ -73,6 +74,7 @@ const columns = [
 ];
 
 import { mapActions } from "vuex";
+import { DeleteUserAccount } from "@/api/UserAccount";
 
 export default {
   data() {
@@ -141,7 +143,10 @@ export default {
       return result;
     },
     handleTableChange(pagination) {
-      this.pagination = pagination;
+      this.pagination = {
+        ...pagination,
+        total: this.$store.getters["userAccount/GetTotalUserAccount"],
+      };
       console.log("Table change: ", this.pagination);
       this.data = this.getListUserAccount(
         this.pagination.current,
@@ -150,6 +155,27 @@ export default {
     },
     handleDeleteUserAccount(idUser) {
       console.log("Id user delete: ", idUser);
+      DeleteUserAccount(
+        { id: idUser },
+        this.$store.state.auth?.currentUser?.id
+          ? this.$store.state.auth.currentUser.id
+          : -1
+      ).then((res) => {
+        console.log(res.data);
+        if (res.data.status === 1) {
+          this.data = this.getListUserAccount(
+            this.page,
+            this.pagination.pageSize
+          );
+          this.pagination = { ...this.pagination, current: this.page };
+        } else {
+          if (!this.$store.state.auth.currentUser) {
+            this.$router.push({ name: "Login" });
+          } else if (this.$store.state.auth.currentUser.idRole) {
+            this.$message.error("You not have permision to delete");
+          }
+        }
+      });
     },
   },
   computed: {
@@ -158,7 +184,7 @@ export default {
     },
   },
   created() {
-    console.log("Pagination: ", this.pagination.pageSize);
+    // console.log("Pagination: ", this.pagination.pageSize);
     this.data = this.getListUserAccount(this.page, this.pagination.pageSize);
   },
 };

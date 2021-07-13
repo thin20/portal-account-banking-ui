@@ -17,3 +17,14 @@ export async function GetListUserAccount(parameter) {
         method: 'get',
     })
 }
+
+export async function DeleteUserAccount(parameter, currentUserId) {
+    let paramString = queryString.stringify(parameter)
+    return axios({
+        url: api.DeleteUserAccount + '?' + paramString,
+        method: 'delete',
+        headers: {
+            "idUser": currentUserId
+        }
+    })
+}
