@@ -3,14 +3,22 @@
     <a-row justify="center">
       <a-col :span="20" :offset="2">
         <h1 class="title-list-user-account">TOTAL: {{ total }}</h1>
-        <router-link to="/formAddUserAccount" class="btn-add-user-account">
-          Add User Account
-        </router-link>
+        <div class="control-user-account">
+          <router-link to="/formAddUserAccount" class="btn-add-user-account">
+            Add User Account
+          </router-link>
+          <input
+            class="input-search-user-account"
+            placeholder="Search...."
+            v-on:input="handleSearchUserAccount"
+          />
+        </div>
         <a-table
           ref="TableUserAccount"
           :columns="columns"
           :data-source="data"
           :pagination="data.length === 0 ? false : pagination"
+          :loading="this.loading"
           @change="handleTableChange"
           bordered
         >
@@ -28,9 +36,8 @@
           <template slot="operation" slot-scope="text, record">
             <div class="editable-row-operations">
               <span>
-                <router-link :to="'/formUpdateUserAccount/' + record.key"
-                  >Edit</router-link
-                >&nbsp;
+                <a @click="handleUpdateUserAccount(record.key)">Edit</a>
+                &nbsp;
                 <a @click="handleDeleteUserAccount(record.key)">Delete</a>
               </span>
             </div>
@@ -81,8 +88,9 @@ export default {
     return {
       columns,
       data: [],
+      loading: false,
       page: 1,
-      // total: 1,
+      search: "",
       pagination: {
         current: 1,
         total: this.total,
@@ -99,12 +107,15 @@ export default {
   },
   methods: {
     ...mapActions[
-      ("userAccount/getListUserAccount", "userAccount/getAlUserAccount")
+      ("userAccount/getListUserAccount",
+      "userAccount/getListSearchUserAccount",
+      "userAccount/getAlUserAccount")
     ],
     ...mapGetters["auth/loggedIn"],
     getListUserAccount(page, limit) {
       let _this = this;
       let result = [];
+      this.loading = true;
       this.$store
         .dispatch("userAccount/getListUserAccount", {
           page,
@@ -122,6 +133,34 @@ export default {
               country: item.country,
             });
           });
+          this.loading = false;
+        });
+      return result;
+    },
+    getListSearchUserAccount(page, limit, search) {
+      let _this = this;
+      let result = [];
+      this.loading = true;
+      this.$store
+        .dispatch("userAccount/getListSearchUserAccount", {
+          page,
+          limit,
+          search,
+        })
+        .then((res) => {
+          console.log("Res: ", res);
+          _this.pagination.total =
+            _this.$store.getters["userAccount/GetTotalUserAccount"];
+          result = res.forEach((item) => {
+            result.push({
+              key: item.id,
+              name: item.name,
+              idRole: item.idRole,
+              phone: item.phone,
+              country: item.country,
+            });
+          });
+          this.loading = false;
         });
       return result;
     },
@@ -149,10 +188,18 @@ export default {
         total: this.$store.getters["userAccount/GetTotalUserAccount"],
       };
       console.log("Table change: ", this.pagination);
-      this.data = this.getListUserAccount(
-        this.pagination.current,
-        this.pagination.pageSize
-      );
+      if (!this.search || this.search.length == 0) {
+        this.data = this.getListUserAccount(
+          this.pagination.current,
+          this.pagination.pageSize
+        );
+      } else {
+        this.data = this.getListSearchUserAccount(
+          this.pagination.current,
+          this.pagination.pageSize,
+          this.search
+        );
+      }
     },
     handleDeleteUserAccount(idUser) {
       console.log("Id user delete: ", idUser);
@@ -162,8 +209,8 @@ export default {
           ? this.$store.state.auth.currentUser.id
           : -1
       ).then((res) => {
-        console.log(res.data);
         if (res.data.status === 1) {
+          this.$message.success("Delete successful!");
           this.data = this.getListUserAccount(
             this.page,
             this.pagination.pageSize
@@ -177,6 +224,37 @@ export default {
           }
         }
       });
+    },
+    handleSearchUserAccount(e) {
+      this.search = e.target.value;
+      if (!this.search || this.search.length === 0) {
+        this.data = this.getListUserAccount(
+          this.page,
+          this.pagination.pageSize
+        );
+      } else {
+        this.data = this.getListSearchUserAccount(
+          this.page,
+          this.pagination.pageSize,
+          this.search
+        );
+        this.pagination.current = 1;
+      }
+    },
+    handleUpdateUserAccount(userId) {
+      if (this.$store.getters["auth/loggedIn"]) {
+        if (this.$store.state.auth.currentUser.idRole.trim() === "admin") {
+          if (this.$store.state.auth.currentUser.id === userId) {
+            this.$message.error("You can't edit your account!");
+          } else {
+            this.$router.push("/formUpdateUserAccount/" + userId);
+          }
+        } else {
+          this.$message.error("You don't have the role to edit");
+        }
+      } else {
+        this.$router.push({ name: "Login" });
+      }
     },
   },
   computed: {
@@ -198,9 +276,13 @@ export default {
   padding-top: 20px;
   text-align: center;
 }
+.control-user-account {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
 .btn-add-user-account {
   display: block;
-  margin-bottom: 20px;
   padding: 8px 15px;
   width: 180px;
 
@@ -214,5 +296,11 @@ export default {
 }
 .btn-add-user-account:hover {
   opacity: 0.8;
+}
+.input-search-user-account {
+  display: block;
+  height: 38px;
+  width: 300px;
+  padding: 0 10px;
 }
 </style>

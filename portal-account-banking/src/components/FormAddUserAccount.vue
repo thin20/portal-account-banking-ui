@@ -109,6 +109,7 @@
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="Phone Number">
             <a-input
+              type="number"
               v-decorator="[
                 'phone',
                 {
@@ -134,7 +135,9 @@
             </a-checkbox>
           </a-form-item>
           <a-form-item v-bind="tailFormItemLayout">
-            <a-button type="primary" html-type="submit"> Add </a-button>
+            <a-button type="primary" html-type="submit" :loading="this.loading">
+              Add
+            </a-button>
           </a-form-item>
         </a-form>
       </a-col>
@@ -150,6 +153,7 @@ export default {
       confirmDirty: false,
       country: "",
       autoCompleteResult: [],
+      loading: false,
       formItemLayout: {
         labelCol: {
           xs: { span: 24 },
@@ -186,6 +190,7 @@ export default {
       e.preventDefault();
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
+          this.loading = true;
           values = { ...values, country: this.country, idRole: values.role[0] };
           console.log("Received values of form: ", values);
           let userInfo = {
@@ -216,7 +221,9 @@ export default {
               this.form.resetFields();
               this.$message.error("Username is already exits!");
             }
+            this.loading = false;
           });
+          this.loading = false;
         }
       });
     },

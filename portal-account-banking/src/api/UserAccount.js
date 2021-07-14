@@ -18,6 +18,15 @@ export async function GetListUserAccount(parameter) {
     })
 }
 
+export async function GetListSearchUserAccount(parameter) {
+    let paramString = queryString.stringify(parameter)
+    console.log("Param String: ", paramString)
+    return axios({
+        url: api.GetListSearchUserAccount + '?' + paramString,
+        method: 'get',
+    })
+}
+
 export async function GetUserAccountByID(parameter) {
     let paramString = queryString.stringify(parameter)
     return axios({

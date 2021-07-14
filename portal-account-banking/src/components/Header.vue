@@ -2,7 +2,7 @@
   <div>
     <a-page-header
       style="border: 1px solid rgb(235, 237, 240)"
-      title="Title"
+      title="Logo"
       @back="
         () => {
           this.$router.push({ name: 'Home' });
@@ -18,8 +18,14 @@
         </router-link>
       </template>
       <template slot="extra" v-else>
-        <span>{{ idRole }}: {{ username }}</span>
-        <span v-on:click="handleLogout" style="cursor: pointer"> / Logout</span>
+        <span>{{ idRole }}: {{ username }}</span
+        >&nbsp;&nbsp;
+        <a-button
+          type="danger"
+          v-on:click="handleLogout"
+          style="cursor: pointer"
+          >Logout</a-button
+        >
       </template>
     </a-page-header>
   </div>

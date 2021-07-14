@@ -53,6 +53,7 @@
               type="primary"
               html-type="submit"
               class="login-form-button"
+              :loading="this.loading"
             >
               Log in
             </a-button>
@@ -68,6 +69,11 @@
 <script>
 import { mapActions } from "vuex";
 export default {
+  data() {
+    return {
+      loading: false,
+    };
+  },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "normal_login" });
   },
@@ -78,6 +84,7 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log("Received values of form: ", values);
+          this.loading = true;
           let statusLogin = this.$store.dispatch("auth/logIn", values);
           statusLogin.then((res) => {
             if (res) {
@@ -89,6 +96,7 @@ export default {
               );
               this.form.resetFields();
             }
+            this.loading = false;
           });
         }
       });

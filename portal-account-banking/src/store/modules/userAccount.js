@@ -1,4 +1,4 @@
-import { GetListUserAccount, GetAllUserAccount, CreateUserAccount, UpdateUserAccount } from '@/api/UserAccount'
+import { GetListUserAccount, GetListSearchUserAccount, GetAllUserAccount, CreateUserAccount, UpdateUserAccount } from '@/api/UserAccount'
 
 export const state = {
     listUserAccount: [],
@@ -48,6 +48,30 @@ export const actions = {
                 }
             }
             return new Promise((resolve, reject) => reject(response))
+        } catch (error) {
+            console.log(error)
+            return new Promise((resolve, reject) => reject(error))
+        }
+    },
+    async getListSearchUserAccount({ commit }, { page, limit, search } = {}) {
+        const params = {
+            page: Number.parseInt(page),
+            limit: Number.parseInt(limit),
+            search: search
+        }
+        try {
+            const response = await GetListSearchUserAccount(params)
+            // console.log("Response list user account: ", response)
+            if (response?.data?.status && response?.data?.data) {
+                if (response.data.status === 1) {
+                    console.log("response.data.data: ", response.data.data)
+                    commit('SET_LIST_USER_ACCOUNT', response.data.data)
+                    commit('SET_NUMBER_OF_PAGE', response.data.numberOfPage)
+                    commit('SET_TOTAL_USER_ACCOUNT', response.data.total)
+                    return new Promise((resolve) => resolve(response.data.data))
+                }
+            }
+            return new Promise((resolve) => resolve(false))
         } catch (error) {
             console.log(error)
             return new Promise((resolve, reject) => reject(error))
